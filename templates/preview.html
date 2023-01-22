@@ -1,0 +1,80 @@
+{% extends 'layout.html' %} {% block body %} {% include 'includes/_navbar.html' %}
+
+<!-- ------------ single product detail ---------------- -->
+<div class="small-container-2 single-product">
+  <div class="small-container">
+    <div class="row row-3">
+      <a href="/seller-product"><img src="static/images/arrow-back.webp" width="20px" /></a>
+      <div class="right-btn">
+        {% for p in products %}
+        <a href="/editProduct?productId={{p.0}}"><button class="btn">Edit</button></a>
+        <a href="#"><button class="btn" id="deleteBtn">Delete</button></a>
+        {% endfor %}
+      </div>
+    </div>
+
+    <!-- The Modal -->
+    <div id="myModal" class="modal">
+      <div class="modal-content">
+        <span class="close">&times;</span>
+        <div class="modal-container">
+          <img src="static/images/cross-icon.png" class="cross-icon" />
+          {% for p in products %}
+          <h1>Are you sure?</h1>
+          <p>Do you really want to delete {{p.1}}? This process cannot be undone.</p>
+          <a href="/myProduct?productId={{p.0}}"><button class="btn-2">Cancel</button></a>
+          <a href="/deleteProduct?productId={{p.0}}"><button class="btn">Delete</button></a>
+          {% endfor %}
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="row">
+    {% for p in products %}
+    <div class="col-2">
+      <img src="{{p.5}}" width="100%" />
+    </div>
+
+    <div class="col-2">
+      <h1>{{ p.1}}</h1>
+      <h4>{{ p.3 | currencyFormat}}</h4>
+      <h3>Stock: {{p.8}}</h3>
+      <br />
+      <h3>Product Detail <i class="fa-solid fa-indent"></i></h3>
+      <br />
+      <p>{{p.2}}</p>
+      {% endfor %}
+    </div>
+  </div>
+</div>
+
+<!-- ------------- JS for user-account  --------------------- -->
+<script>
+  // Get the modal
+  var modal = document.getElementById("myModal");
+
+  // Get the button that opens the modal
+  var btn = document.getElementById("deleteBtn");
+
+  // Get the <span> element that closes the modal
+  var span = document.getElementsByClassName("close")[0];
+
+  // When the user clicks the button, open the modal
+  btn.onclick = function () {
+    modal.style.display = "block";
+  };
+
+  // When the user clicks on <span> (x), close the modal
+  span.onclick = function () {
+    modal.style.display = "none";
+  };
+
+  // When the user clicks anywhere outside of the modal, close it
+  window.onclick = function (event) {
+    if (event.target == modal) {
+      modal.style.display = "none";
+    }
+  };
+</script>
+
+{% endblock %}

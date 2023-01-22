@@ -1,0 +1,84 @@
+{% extends 'layout.html' %} {% block body %} {% include 'includes/_navbar.html' %}
+
+<!-- ----------------- account page -------------------- -->
+
+<div class="profile-page">
+  <div class="container">
+    <div class="row">
+      <div class="col-2">
+        <img src="static/images/image.webp" width="100%" />
+      </div>
+      <div class="col-2">
+        <div class="profile-container">
+          <div id="Profile">
+            <img src="static/images/edit-icon.png" class="edit-icon" onclick="edit()" />
+            
+            {% if account[6] == None %}
+              <img src="static/images/profile-icon.png" class="profile-pic" />
+            {% else %}
+              <img src="{{account[6]}}" class="profile-pic" />
+            {% endif %}
+            <h3>{{account[1]}}</h3>
+            <p>{{ account[3]}}</p>
+            <p>{{ account[2]}}</p>
+            <p>{{account[8]}}</p>
+            <p>{{account[5]}}</p>
+            <a href="/logout"><button class="btn">Logout</button></a>
+          </div>
+
+          <div id="EditProfile">
+            <img src="static/images/arrow-back.webp" class="back-icon" onclick="back()" />
+
+            <form id="EditForm" method="POST" action="{{url_for('editProfile')}}" enctype = "multipart/form-data">
+              <div class="edit-photo">
+                {% if account[6] == None %}
+                  <img src="static/images/profile-icon.png" id="photo" />
+                {% else %}
+                  <img src="{{account[6]}}" id="photo" />
+                {% endif %}
+                <input type="file" id="file" name="file" onchange="readURL(this);"/>
+                <label for="file" id="uploadBtn">Choose Photo</label>
+              </div>
+
+              <input type="text" name="name" value="{{account[1]}}" />
+              <input type="text" name="username" value="{{account[3]}}" />
+              <input type="email" name="email" value={{account[2]}} />
+              <input type="text" name="address" value="{{account[8]}}" />
+              <input type="text" name="mobileNo" value={{account[5]}} />
+              <button type="submit" class="btn">Save</button>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  var Profile = document.getElementById("Profile");
+  var EditProfile = document.getElementById("EditProfile");
+
+  function edit() {
+    Profile.style.transform = "translateX(-300px)";
+    EditProfile.style.transform = "translateX(-300px)";
+  }
+  function back() {
+    Profile.style.transform = "translateX(0px)";
+    EditProfile.style.transform = "translateX(0px)";
+  }
+</script>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+<script>
+  function readURL(input) {
+    if (input.files && input.files[0]) {
+      var reader = new FileReader();
+
+      reader.onload = function (e) {
+        $("#photo").attr("src", e.target.result);
+      };
+
+      reader.readAsDataURL(input.files[0]);
+    }
+  }
+</script>
+{% endblock %}

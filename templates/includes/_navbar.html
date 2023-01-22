@@ -1,0 +1,48 @@
+<div class="container">
+  <!-- ------------ navbar ---------------- -->
+  <div class="navbar">
+    <div>
+      <img src="static/images/logodklikin.png" width="200px" height="100px" />
+    </div>
+    <nav>
+      <ul id="MenuItems">
+        <li><a href="/">Home</a></li>
+        <li><a href="/products">Products</a></li>
+        <li><a href="/about">About</a></li>
+        {% if not loggedIn %}
+        <li><a href="/account">Login</a></li>
+      </ul>
+    </nav>
+        {% else %}
+      </ul>
+    </nav>
+
+    <div class="user-account">
+      <ul>
+        <li>
+          <a href="#">
+            <p>
+              {{name}}<br />
+              <span>{{username}}</span>
+            </p>
+            <img src={{photo}} alt="User" /><i class="fas fa-angle-down"></i>
+          </a>
+
+          <div class="dropdown">
+            <ul>
+              <li><a href="/profile">Profile</a></li>
+              <li><a href="/orders">My Orders</a></li>
+              <li><a href="/seller-product">My Store</a></li>
+              <li><a href="/mySales">My Sales</a></li>
+              <li><a href="/logout">Logout</a></li>
+            </ul>
+          </div>
+        </li>
+      </ul>
+    </div>
+    {% endif %}
+
+    <a href="/cart"><i class="fa-solid fa-cart-shopping"></i></a>
+    <i class="fa-solid fa-bars menu-icon" onclick="menutoggle()"></i>
+  </div>
+</div>

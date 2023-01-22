@@ -1,0 +1,70 @@
+{% extends 'layout.html' %} {% block body %} {% include 'includes/_navbar.html' %}
+
+<div class="small-container cart-page">
+  {% if msg %}
+  <img src="static/images/empty-cart.png" width="20%" class="center" style="padding: 50px 0;"/>
+  <div class="alert-2" style="display: block">{{msg}}</div>
+  {% else %}
+
+  <table>
+    <tr>
+      <th>Product</th>
+      <th>Quantity</th>
+      <th>Subtotal</th>
+    </tr>
+    {% set ns = namespace(total=0) %} {% for product in products %}
+    <tr>
+      <td>
+        <div class="cart-info">
+          <img src="{{product[8]}}" />
+          <div>
+            <p>{{ product[4] | truncate(60)}}</p>
+            <small>Price: {{product[6] | currencyFormat}}</small>
+            <br />
+            <a href="/removeFromCart?productId={{product.1}}">Remove</a>
+          </div>
+        </div>
+      </td>
+      <td>{{product[2]}}</td>
+      <td>{% set subtotal = product[2]*product[6]%}{{subtotal | currencyFormat}}</td>
+      {% set ns.total = ns.total + subtotal %}
+    </tr>
+    {% endfor %}
+  </table>
+
+  <div class="total-price">
+    <table>
+      <tr>
+        <td>Subtotal</td>
+        <td>{{ns.total | currencyFormat}}</td>
+      </tr>
+      <!--<tr>
+        <td>Shipping fee</td>
+        <td>{{10000 | currencyFormat}}</td>
+      </tr>
+      <tr>
+        <td>Total</td>
+
+        <td>{% set total = ns.total + 10000%}{{total | currencyFormat}}</td>-->
+      </tr>
+      <tr>
+        {% if address[0] == None %}
+        <td>Please add your address first!</td>
+			  <td colspan="2">
+          <a href="/profile"><button class="btn">Profile</button></a>
+        </td>
+			  {% else %}
+			  <td colspan="2">
+          <a href="/orderDetails"><button class="btn">Checkout</button></a>
+        </td>
+			  {% endif %}
+        <!-- <td colspan="2">
+          <a href="/orderDetails"><button class="btn">Checkout</button></a>
+        </td> -->
+      </tr>
+    </table>
+  </div>
+  {% endif%}
+</div>
+
+{% endblock %}

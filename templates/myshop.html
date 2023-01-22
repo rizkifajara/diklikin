@@ -1,0 +1,61 @@
+{% extends 'layout.html' %} {% block body %} {% include 'includes/_navbar.html' %}
+
+<!-- --------profile header ------------ -->
+<div class="small-container">
+  <div class="row">
+    <div class="col-5">
+      {% if account[6] == None %}
+      <img src="static/images/profile-icon.png" class="profile-pic center" alt="User" />
+      {% else %}
+      <img src="{{account[6]}}" class="profile-pic center" alt="User" />
+      {% endif %}
+      <!-- <img src="static/images/profile-icon.png" class="profile-pic center" alt="User" /> -->
+    </div>
+
+    <div class="col-6">
+      <h1>{{account[1]}}</h1>
+      <h3>{{account[3]}}</h3>
+      <p>{{account[2]}}</p>
+      <p>{{account[5]}}</p>
+      {% if account[0] == session['id'] %}
+      <a href="/profile"><button class="btn">Profile</button></a>
+      {% endif %}
+    </div>
+  </div>
+  <hr />
+</div>
+
+<div class="small-container">
+  {% if msg %}
+  <div class="alert-2" style="display: block">{{msg}}</div>
+  {% if account[0] == session['id'] %}
+  <a href="/addProduct"><button class="center-btn">Add Product</button></a>
+  {% endif %} {% else %}
+  <div class="row">
+    <h2 class="title-2">All Products</h2>
+    {% if account[0] == session['id'] %}
+    <a href="/addProduct"
+      ><button class="btn circle-btn">
+        <span><i class="fa-solid fa-plus"></i></span></button
+    ></a>
+    {% endif %}
+  </div>
+
+  <div class="row">
+    <!-- --------card ------------ -->
+    {% for p in products %}
+    <div class="col-4">
+      {% if account[0] == session['id'] %}
+      <a href="/myProduct?productId={{p.0}}"> <img src="{{p.5}}" height="237.5px" width="237.5" style="object-fit: contain" /> </a>
+      {% else %}
+      <a href="/product-detail?productId={{p.0}}&category={{p.4}}&sellerId={{p.6}}"> <img src="{{p.5}}" height="237.5px" width="237.5" style="object-fit: contain" /> </a>
+      {% endif %}
+      <h4>{{ p.1}}</h4>
+      <p>{{p.3 | currencyFormat}}</p>
+    </div>
+    {% endfor %}
+  </div>
+  {% endif %}
+</div>
+
+{% endblock %}

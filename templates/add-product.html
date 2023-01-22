@@ -1,0 +1,51 @@
+{% extends 'layout.html' %} {% block body %} {% include 'includes/_navbar.html' %}
+
+<!-- ------------ single product detail ---------------- -->
+<div class="small-container-2 single-product2">
+  <div class="small-container">
+    <div class="row row-3">
+      <a href="/seller-product"><img src="static/images/arrow-back.webp" width="20px" /></a>
+    </div>
+  </div>
+  <div class="row">
+    <div class="col-2">
+      <form action="{{ url_for('addPro') }}" method="POST" enctype="multipart/form-data">
+        <div class="add-photo-product">
+          <img src="static/images/buy-1.jpg" id="photo" />
+          <input type="file" id="file" name="fileGambar" onchange="readURL(this);" />
+          <label for="file" id="uploadBtn">Choose Photo</label>
+        </div>
+        <div class="add-product-form">
+          <h2>Category</h2>
+          <input type="text" name="category" />
+          <h2>Product Name</h2>
+          <input type="text" name="name" />
+          <h2>Price</h2>
+          <input type="text" name="price" />
+          <h2>Stock</h2>
+          <input type="number" name="stock" />
+          <h2>Description</h2>
+          <textarea name="description"></textarea>
+          <button type="submit" class="btn">Save</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+<script>
+  function readURL(input) {
+    if (input.files && input.files[0]) {
+      var reader = new FileReader();
+
+      reader.onload = function (e) {
+        $("#photo").attr("src", e.target.result);
+      };
+
+      reader.readAsDataURL(input.files[0]);
+    }
+  }
+</script>
+
+{% endblock %}

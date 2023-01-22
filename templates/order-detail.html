@@ -1,0 +1,378 @@
+{% extends 'layout.html' %} {% block body %} {% include 'includes/_navbar.html' %}
+
+
+
+<!-- ------------ cart  ---------------- -->
+    <div class="small-container cart-page">
+      <table>
+        <tr>
+          <th>Product</th>
+          <th>Quantity</th>
+          <th>Subtotal</th>
+        </tr>
+        {% set ns = namespace(total=0) %} {% for product in products %}
+        <tr>
+          <td>
+            <div class="cart-info">
+              <img src="{{product[8]}}" />
+              <div>
+                <p>{{ product[4] | truncate(60)}}</p>
+                <small>Price: {{product[6] | currencyFormat}}</small>
+                <br />
+                <div class="store-name2">
+		{% for s in seller %}
+		  {% if s[3] == product[9] %}
+                    <a href="#">
+		    {% if s[2] == none %}
+                      <img src="static/images/profile-icon.png" id="User"  /> <p>{{s[0]}}</p>
+                    {% else %}
+                      <img src="{{s[2]}}" alt="User"  />
+	              <p>{{s[0]}}</p>
+                    {% endif %}
+		    </a>
+		  {% endif %}
+		{% endfor %}
+		</div>
+              </div>
+            </div>
+          </td>
+          <td>{{product[2]}}</td>
+          <td>{% set subtotal = product[2]*product[6]%}{{subtotal | currencyFormat}}</td>
+          {% set ns.total = ns.total + subtotal %}
+        </tr>
+        {% endfor %}   
+      </table>
+      <hr />
+
+      <div class="delivery">
+        <form>
+          <table>
+            <tr>
+              <td>Delivery option :</td>
+              <td>
+                <div class="custom-select" style="width: 200px">
+                  <select id="shippingCompany">
+                    <option value="-1">Select courier :</option>
+                    {% for ship in shipping %}
+                      <option id="ship{{loop.index - 1}}"value="{{loop.index - 1}}">{{ship[1]}}</option>
+                      <!-- <input id="tarif_awal" type="hidden" value="{{ship[2]}}">
+                      <input id="tarif_km" type="hidden" value="{{ship[3]}}"> -->
+                    {% endfor %}
+                  </select>
+                </div>
+              </td>
+              <td>
+                <div class="custom-select" style="width: 200px">
+                  <!-- <select>
+                    <option value="0">Select service :</option>
+                    <option value="J&T Express">Same day</option>
+                    <option value="JNE Express">Regular</option>
+                    <option value="Pos Indonesia">Cargo</option>
+                  </select> -->
+                </div>
+              </td>
+              <td></td>
+            </tr>
+            <tr>
+              <td>Address :</td>
+              <td>
+                <textarea cols="30" rows="5" disabled>{{user[8]}}</textarea>
+              </td>
+              <td><div id="map" style="clear:both; height:200px;"></td>
+              <td></td>
+            </tr>
+          </table>
+        </form>
+      </div>
+
+      <hr />
+
+      <div class="total-price">
+        <table>
+          <tr>
+            <td>Subtotal</td>
+            <td>{{ns.total | currencyFormat}}</td>
+          </tr>
+          {% set ls = namespace(ship=0) %}{% for i in range(dist|length) %}
+            <tr>
+              <td>Ongkir {{sellerName[i]}} ({{dist[i]}})</td>
+	            <td>{{shippingFee[i] | currencyFormat}}</td>
+              {% set ls.ship = ls.ship + shippingFee[i]%}
+            </tr>
+	  {% endfor %}
+    {% set ls.ship = ls.ship | to_decimal%}
+          <tr>
+            {% set realTotal =  ns.total + ls.ship %}
+            <td>Total <span> </span></td>
+            <input type="hidden" id="real_total" name="real_total" value="{{realTotal}}"/>
+            <td id ="td-total">{{ realTotal | currencyFormat}}</td>
+          </tr>
+          <tr>
+            <td colspan="2" class="checkout">
+              <input type='hidden' id='snap_token' value="{{ token }}"/>
+              <a href="#"><button class="btn button-checkout">Buy</button></a>
+            </td>
+          </tr>
+        </table>
+      </div>
+    </div>
+
+    <script type="text/javascript"
+            src="https://app.sandbox.midtrans.com/snap/snap.js"
+            data-client-key="{{ client_key }}"></script>
+
+            <script>
+              var token = document.querySelectorAll('#snap_token')[0].value;
+              console.log(token)
+              var checkoutBtn = document.querySelectorAll('.checkout')[0];
+              checkoutBtn.onclick = function(){
+                console.log('opening snap popup:');
+                let real_total = $("#real_total").val();
+                console.log("total: " + real_total)
+                // Open Snap popup with defined callbacks.
+                snap.pay(token, {
+                  onSuccess: function(result) {
+                    console.log("SUCCESS", result);
+                    
+                    $.ajax({
+                      type : 'POST',
+                      url : "{{url_for('addOrders')}}",
+                      contentType: 'application/json;charset=UTF-8',
+                      dataType: 'json',
+                      data : JSON.stringify({
+                        'status':'success',
+                        'order_id': '{{order_id}}',
+                        'real_total': real_total
+                      }),
+                      success: function() {
+                          window.location.href = '/orders';
+                      }
+                    });
+                  },
+                  onPending: function(result) {
+                    console.log("Payment pending", result);
+                    $.ajax({
+                      type : 'POST',
+                      url : "{{url_for('addOrders')}}",
+                      contentType: 'application/json;charset=UTF-8',
+                      dataType: 'json',
+                      data : JSON.stringify({
+                        'status':'pending',
+                        'order_id': '{{order_id}}',
+                        'real_total': real_total
+                      }),
+                      success: function() {
+                          window.location.href = '/orders';
+                      }
+                    });
+                  },
+                  onError: function() {
+                    console.log("Payment error");
+                    alert("Error")
+                  }
+                });
+                // For more advanced use, refer to: https://snap-docs.midtrans.com/#snap-js
+        
+              }
+      </script>
+
+    <script src="https://polyfill.io/v3/polyfill.min.js?features=default"></script>
+    <script
+      src="https://maps.googleapis.com/maps/api/js?key=AIzaSyA5Pr-3e9IRgFQPpU3ZfOp5SX8CxCocyf8&callback=initMap&v=weekly"
+      defer
+    ></script>
+    <script
+      src="https://code.jquery.com/jquery-3.6.0.min.js"
+      integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4="
+      crossorigin="anonymous"></script>
+    <script>
+      $.urlParam = function(name){
+        var results = new RegExp('[\?&]' + name + '=([^&#]*)').exec(window.location.href);
+        return results[1] || 0;
+      }
+      console.log($.urlParam('ship'))
+      shipParamUrl = ['0','1','2','3']
+      if (shipParamUrl.includes($.urlParam('ship'))) {
+        $("#shippingCompany option[id=ship"+$.urlParam('ship')+"]").attr('selected', 'selected');
+      } else {
+        $("#shippingCompany option[id=ship0]").attr('selected', 'selected');
+      }
+      
+    </script>
+    <script>
+      let geocoder;
+      let map;
+      let address = JSON.parse('{{ user[8] | tojson }}');;
+      let sellerAddress = JSON.parse('{{sellerAddress[0] | tojson}}')
+      console.log(address)
+      console.log(sellerAddress)
+
+      
+
+      function codeAddress(address) {
+
+        geocoder.geocode({ 'address': address }, function (results, status) {
+            console.log(results);
+            var latLng = {lat: results[0].geometry.location.lat(), lng: results[0].geometry.location.lng()};
+            // console.log (latLng);
+            if (status == 'OK') {
+              const map = new google.maps.Map(document.getElementById("map"), {
+                zoom: 14,
+                center: latLng,
+                disableDefaultUI: true
+              });
+                var marker = new google.maps.Marker({
+                    position: latLng,
+                    map: map
+                });
+                
+                console.log (map);
+                console.log(latLng)
+                return latLng
+            } else {
+                alert('Geocode was not successful for the following reason: ' + status);
+            }
+        });
+      }
+
+      function sellerCodeAddress(address) {
+
+        geocoder.geocode({ 'address': address }, function (results, status) {
+            console.log(results);
+            var latLng = {lat: results[0].geometry.location.lat(), lng: results[0].geometry.location.lng()};
+            console.log (latLng);
+            if (status == 'OK') {
+              
+                var sellerMarker = new google.maps.Marker({
+                    position: latLng,
+                    map: map
+                });
+                
+                return latLng
+            } else {
+                alert('Geocode was not successful for the following reason: ' + status);
+            }
+          });
+        }
+
+      function initMap() {
+        geocoder = new google.maps.Geocoder();
+        codeAddress(address);
+        sellerCodeAddress(sellerAddress)
+        // console.log(destination)
+        // const myLatLng = { lat: -25.363, lng: 131.044 };
+        // // const myLatLng = { lat: destination.lat, lng: destination.lng };
+        // // console.log(myLatLng)
+        // const map = new google.maps.Map(document.getElementById("map"), {
+        //   zoom: 4,
+        //   center: myLatLng,
+        //   disableDefaultUI: true
+        // });
+
+        // new google.maps.Marker({
+        //   position: myLatLng,
+        //   map,
+        //   // title: "Hello World!",
+        // });
+      }
+      
+    </script>
+    <!-- ------------- JS for custom dropdown  --------------------- -->
+    <script>
+      var x, i, j, l, ll, selElmnt, a, b, c;
+      /* Look for any elements with the class "custom-select": */
+      x = document.getElementsByClassName("custom-select");
+      l = x.length;
+      for (i = 0; i < l; i++) {
+        selElmnt = x[i].getElementsByTagName("select")[0];
+        ll = selElmnt.length;
+        /* For each element, create a new DIV that will act as the selected item: */
+        a = document.createElement("DIV");
+        a.setAttribute("class", "select-selected");
+        a.innerHTML = selElmnt.options[selElmnt.selectedIndex].innerHTML;
+        x[i].appendChild(a);
+        console.log("a : "+a.value)
+        /* For each element, create a new DIV that will contain the option list: */
+        b = document.createElement("DIV");
+        b.setAttribute("class", "select-items select-hide");
+        for (j = 1; j < ll; j++) {
+          /* For each option in the original select element,
+    create a new DIV that will act as an option item: */
+          c = document.createElement("DIV");
+          c.innerHTML = selElmnt.options[j].innerHTML;
+          c.addEventListener("click", function (e) {
+            /* When an item is clicked, update the original select box,
+        and the selected item: */
+            var y, i, k, s, h, sl, yl;
+            s = this.parentNode.parentNode.getElementsByTagName("select")[0];
+            console.log("c: "+c.value)
+           
+            
+            sl = s.length;
+            h = this.parentNode.previousSibling;
+            console.log("h: "+h.value)
+            for (i = 0; i < sl; i++) {
+              if (s.options[i].innerHTML == this.innerHTML) {
+                s.selectedIndex = i;
+                h.innerHTML = this.innerHTML;
+                console.log("S: "+s.value)
+                var optionValue = s.value;
+                var url = window.location.href.split("?")[0];
+                window.location = url + "?ship=" + optionValue;
+                y = this.parentNode.getElementsByClassName("same-as-selected");
+                console.log("y: "+y.value)
+                yl = y.length;
+                for (k = 0; k < yl; k++) {
+                  y[k].removeAttribute("class");
+                }
+                this.setAttribute("class", "same-as-selected");
+                break;
+              }
+            }
+            h.click();
+          });
+          b.appendChild(c);
+        }
+        x[i].appendChild(b);
+        a.addEventListener("click", function (e) {
+          /* When the select box is clicked, close any other select boxes,
+    and open/close the current select box: */
+          e.stopPropagation();
+          closeAllSelect(this);
+          this.nextSibling.classList.toggle("select-hide");
+          this.classList.toggle("select-arrow-active");
+        });
+      }
+
+      function closeAllSelect(elmnt) {
+        /* A function that will close all select boxes in the document,
+  except the current select box: */
+        var x,
+          y,
+          i,
+          xl,
+          yl,
+          arrNo = [];
+        x = document.getElementsByClassName("select-items");
+        y = document.getElementsByClassName("select-selected");
+        xl = x.length;
+        yl = y.length;
+        for (i = 0; i < yl; i++) {
+          if (elmnt == y[i]) {
+            arrNo.push(i);
+          } else {
+            y[i].classList.remove("select-arrow-active");
+          }
+        }
+        for (i = 0; i < xl; i++) {
+          if (arrNo.indexOf(i)) {
+            x[i].classList.add("select-hide");
+          }
+        }
+      }
+
+      /* If the user clicks anywhere outside the select box,
+then close all select boxes: */
+      document.addEventListener("click", closeAllSelect);
+    </script>
+{% endblock %}

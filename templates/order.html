@@ -1,0 +1,188 @@
+{% extends 'layout.html' %} {% block body %} {% include 'includes/_navbar.html' %}
+
+<div class="small-container cart-page">
+  {% if msg %}
+  <img src="static/images/no-order.png" width="20%" class="center" style="padding: 50px 0; />
+  <div class="alert-2" style="display: block">{{msg}}</div>
+  {% else %}
+  <table>
+    <tr>
+      <th>Product</th>
+      <th>Total</th>
+      <th>Date</th>
+      <th>Status</th>
+    </tr>
+    {% set ns = namespace(total=0) %} {% for product in products %}
+    <tr>
+      <td>
+        <div class="cart-info">
+          <img src="{{product[5]}}" />
+          <div>
+            <p>{{product[14]}} x {{ product[1] | truncate(60)}}</p>
+            <small>Price: {{product[3] | currencyFormat}}</small>
+            <br />
+            {% if product[16] == 'Completed' %}
+            <a href="#myModal{{loop.index - 1}}" data-toggle="modal" class="reviewBtn" data-target="#myModal{{loop.index - 1}}">Review</a>
+            {% endif %}
+          </div>
+        </div>
+
+        <div id="myModal{{loop.index - 1}}" class="modal" data-index="{{loop.index - 1}}">
+          <div class="modal-content-2">
+            <span class="close" data-dismiss="modal" aria-label="Close">&times;</span>
+            <div class="modal-container">
+              <img src="static/images/rating.png" class="rating-icon" />
+              <form method="POST" action="{{url_for('reviewOrders')}}" enctype = "multipart/form-data">
+                <h1>How is the product?</h1>
+                <p>{{ product[1] | truncate(60) }}</p>
+                <input type="hidden" name="productId" value={{product[0]}} readonly="readonly" />
+                <input type="hidden" name="orderDetailId" value={{product[11]}} readonly="readonly" />
+                <div class="rate div-rating-{{loop.index}}">
+                  {% if product[26] == 1.0 %}
+                  <input type="radio" id="star5{{loop.index - 1}}" name="rate" value="5"/>
+                  <label for="star5{{loop.index - 1}}" title="text" class="5rate{{product[11]}}">5 stars</label>
+                  <input type="radio" id="star4{{loop.index - 1}}" name="rate" value="4"/>
+                  <label for="star4{{loop.index - 1}}" title="text" class="4rate{{product[11]}}">4 stars</label>
+                  <input type="radio" id="star3{{loop.index - 1}}" name="rate" value="3"/>
+                  <label for="star3{{loop.index - 1}}" title="text" class="3rate{{product[11]}}">3 stars</label>
+                  <input type="radio" id="star2{{loop.index - 1}}" name="rate" value="2"/>
+                  <label for="star2{{loop.index - 1}}" title="text" class="2rate{{product[11]}}">2 stars</label>
+                  <input type="radio" id="star1{{loop.index - 1}}" name="rate" value="1" checked/>
+                  <label for="star1{{loop.index - 1}}" title="text" class="1rate{{product[11]}}">1 star</label>
+                  {% elif product[26] == 2.0 %}
+                  <input type="radio" id="star5{{loop.index - 1}}" name="rate" value="5"/>
+                  <label for="star5{{loop.index - 1}}" title="text" class="5rate{{product[11]}}">5 stars</label>
+                  <input type="radio" id="star4{{loop.index - 1}}" name="rate" value="4"/>
+                  <label for="star4{{loop.index - 1}}" title="text" class="4rate{{product[11]}}">4 stars</label>
+                  <input type="radio" id="star3{{loop.index - 1}}" name="rate" value="3"/>
+                  <label for="star3{{loop.index - 1}}" title="text" class="3rate{{product[11]}}">3 stars</label>
+                  <input type="radio" id="star2{{loop.index - 1}}" name="rate" value="2" checked/>
+                  <label for="star2{{loop.index - 1}}" title="text" class="2rate{{product[11]}}">2 stars</label>
+                  <input type="radio" id="star1{{loop.index - 1}}" name="rate" value="1"/>
+                  <label for="star1{{loop.index - 1}}" title="text" class="1rate{{product[11]}}">1 star</label>
+                  {% elif product[26] == 3.0 %}
+                  <input type="radio" id="star5{{loop.index - 1}}" name="rate" value="5"/>
+                  <label for="star5{{loop.index - 1}}" title="text" class="5rate{{product[11]}}">5 stars</label>
+                  <input type="radio" id="star4{{loop.index - 1}}" name="rate" value="4"/>
+                  <label for="star4{{loop.index - 1}}" title="text" class="4rate{{product[11]}}">4 stars</label>
+                  <input type="radio" id="star3{{loop.index - 1}}" name="rate" value="3" checked/>
+                  <label for="star3{{loop.index - 1}}" title="text" class="3rate{{product[11]}}">3 stars</label>
+                  <input type="radio" id="star2{{loop.index - 1}}" name="rate" value="2"/>
+                  <label for="star2{{loop.index - 1}}" title="text" class="2rate{{product[11]}}">2 stars</label>
+                  <input type="radio" id="star1{{loop.index - 1}}" name="rate" value="1"/>
+                  <label for="star1{{loop.index - 1}}" title="text" class="1rate{{product[11]}}">1 star</label>
+                  {% elif product[26] == 4.0 %}
+                  <input type="radio" id="star5{{loop.index - 1}}" name="rate" value="5"/>
+                  <label for="star5{{loop.index - 1}}" title="text" class="5rate{{product[11]}}">5 stars</label>
+                  <input type="radio" id="star4{{loop.index - 1}}" name="rate" value="4" checked/>
+                  <label for="star4{{loop.index - 1}}" title="text" class="4rate{{product[11]}}">4 stars</label>
+                  <input type="radio" id="star3{{loop.index - 1}}" name="rate" value="3"/>
+                  <label for="star3{{loop.index - 1}}" title="text" class="3rate{{product[11]}}">3 stars</label>
+                  <input type="radio" id="star2{{loop.index - 1}}" name="rate" value="2"/>
+                  <label for="star2{{loop.index - 1}}" title="text" class="2rate{{product[11]}}">2 stars</label>
+                  <input type="radio" id="star1{{loop.index - 1}}" name="rate" value="1"/>
+                  <label for="star1{{loop.index - 1}}" title="text" class="1rate{{product[11]}}">1 star</label>
+                  {% elif product[26] == 5.0 %}
+                  <input type="radio" id="star5{{loop.index - 1}}" name="rate" value="5" checked/>
+                  <label for="star5{{loop.index - 1}}" title="text" class="5rate{{product[11]}}">5 stars</label>
+                  <input type="radio" id="star4{{loop.index - 1}}" name="rate" value="4"/>
+                  <label for="star4{{loop.index - 1}}" title="text" class="4rate{{product[11]}}">4 stars</label>
+                  <input type="radio" id="star3{{loop.index - 1}}" name="rate" value="3"/>
+                  <label for="star3{{loop.index - 1}}" title="text" class="3rate{{product[11]}}">3 stars</label>
+                  <input type="radio" id="star2{{loop.index - 1}}" name="rate" value="2"/>
+                  <label for="star2{{loop.index - 1}}" title="text" class="2rate{{product[11]}}">2 stars</label>
+                  <input type="radio" id="star1{{loop.index - 1}}" name="rate" value="1"/>
+                  <label for="star1{{loop.index - 1}}" title="text" class="1rate{{product[11]}}">1 star</label>
+                  {% else %}
+                  <input type="radio" id="star5{{loop.index - 1}}" name="rate" value="5"/>
+                  <label for="star5{{loop.index - 1}}" title="text" class="5rate{{product[11]}}">5 stars</label>
+                  <input type="radio" id="star4{{loop.index - 1}}" name="rate" value="4"/>
+                  <label for="star4{{loop.index - 1}}" title="text" class="4rate{{product[11]}}">4 stars</label>
+                  <input type="radio" id="star3{{loop.index - 1}}" name="rate" value="3"/>
+                  <label for="star3{{loop.index - 1}}" title="text" class="3rate{{product[11]}}">3 stars</label>
+                  <input type="radio" id="star2{{loop.index - 1}}" name="rate" value="2"/>
+                  <label for="star2{{loop.index - 1}}" title="text" class="2rate{{product[11]}}">2 stars</label>
+                  <input type="radio" id="star1{{loop.index - 1}}" name="rate" value="1"/>
+                  <label for="star1{{loop.index - 1}}" title="text" class="1rate{{product[11]}}">1 star</label>
+                  {% endif %}
+                </div>
+                {% if product[27] is none %}
+                  <textarea name="review" cols="30" rows="10" placeholder="Description"></textarea>
+                {% else %}
+                  <textarea name="review" cols="30" rows="10" placeholder="Description">{{product[27]}}</textarea>
+                {% endif %}
+                {% if product[26] is none %}
+                  <button type="submit" class="btn">Save</button>
+                {% endif %}
+              </form>
+            </div>
+          </div>
+        </div>
+      </td>
+
+      <td>{{product[20] | currencyFormat}}</td>
+      <td>{{product[18]}}</td>
+      <!-- <td>{{product[16]}}</td> -->
+      {% if product[16] == 'Delivered' %}
+	    <td>{{product[16]}}<br />
+      <a href="/receiveProduct?ordDetId={{product[11]}}"><button class="btn" id="receiveBtn">Product Received!</button></a></td>
+	    {% else %}
+	    <td>{{product[16]}}</td>
+	    {% endif %}
+    </tr>
+    {% endfor %}
+  </table>
+  {% endif %}
+</div>
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js" integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" crossorigin="anonymous"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
+
+
+<!-- <script>
+  
+    function check_radio(radio_name, radio_val){
+      console.log(radio_name)
+      if('1'==="1") {
+        console.log("ok")
+      }
+      console.log(radio_val)
+      document.querySelectorAll('input[type="radio"][name="'+radio_name+'"][value="'+radio_val+'"]').checked = true;
+      // document.querySelectorAll('input[type="radio"][value="4"]').checked = true;
+    }
+  
+</script> -->
+<!-- ------------- JS for review modal  --------------------- -->
+<!-- <script>
+  // Get the modal
+  var modal = document.getElementById("myModal");
+
+  // Get the button that opens the modal
+  var btn = document.getElementsByClassName("reviewBtn");
+
+  // Get the <span> element that closes the modal
+  var span = document.getElementsByClassName("close")[0];
+
+  // When the user clicks the button, open the modal
+  var showModal = function() {
+    modal.style.display = "block";
+  };
+
+  for (var i = 0; i < btn.length; i++) {
+    btn[i].addEventListener('click', showModal, false);
+  }
+
+  // When the user clicks on <span> (x), close the modal
+  span.onclick = function () {
+    modal.style.display = "none";
+  };
+
+  // When the user clicks anywhere outside of the modal, close it
+  window.onclick = function (event) {
+    if (event.target == modal) {
+      modal.style.display = "none";
+    }
+  };
+</script> -->
+
+{% endblock %}

@@ -1,0 +1,47 @@
+{% extends 'layout.html' %} {% block body %} {% include 'includes/_navbar.html' %}
+
+<div class="small-container cart-page">
+  {% if msg %}
+    <img src="static/images/no-order.png" width="20%" class="center" style="padding: 50px 0; />
+    <div class="alert-2" style="display: block">{{msg}}</div>
+  {% else %}
+  <table>
+    <tr>
+      <th>Product</th>
+      <th>Total</th>
+      <th>Buyer</th>
+      <th>Action</th>
+    </tr>
+    {% for product in sales %}
+    <tr>
+      <td style="width: 550px"	>
+        <div class="cart-info">
+          <img src="{{product[2]}}" />
+          <div>
+            <p style="font-weight: bolder">{{ product[5]}} x {{ product[0]}}</p>
+            <small>Price: {{product[1] | currencyFormat}}</small><br />
+	    <small>Order Id: {{product[6]}}</small>
+            <br />
+          </div>
+        </div>
+      </td>
+	  
+      <td>{{product[7] | currencyFormat}}</td>
+      <td style="width: 250px">
+        <div>
+          <p style="font-weight: bolder">{{ product[9]}}</p>
+          <small>{{product[10]}}</small><br />
+        </div>
+      </td>
+      {% if product[4] != 'success' %}
+        <td>{{product[4]}}</td>
+      {% else %}
+        <td><a href="/sendProduct?ordDetId={{product[3]}}"><button class="btn" id="sendBtn">Send Product</button></a></td>
+      {% endif %}
+    </tr>
+    {% endfor %}
+  </table>
+  {% endif %}
+</div>
+
+{% endblock %}

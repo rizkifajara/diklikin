@@ -1,0 +1,149 @@
+{% extends 'layout.html' %}
+{% block body %}
+    {% include 'includes/_navbar.html' %}
+    <div class="small-container">
+        <div class="row">
+          <div class="col-2">
+            <h1 class="title-diklikin">
+              Di Klik In
+            </h1>
+            <p class="title-diklikin">Situs marketplace terbesar dan termurah no 1 di Indonesia</p>
+          </div>
+          <div class="col-2">
+            <img src="static/images/image.webp" class="center" />
+          </div>
+        </div>
+    </div>
+    <br><br><br>
+    <div class="slideshow-container hide-me">
+
+      <div class="mySlides fade">
+        <img src="static/images/banner1.png" style="width:100%">
+      </div>
+    
+      <div class="mySlides fade">
+        <img src="static/images/banner2.png" style="width:100%">
+      </div>
+    
+      <div class="mySlides fade">
+        <img src="static/images/banner3.png" style="width:100%">
+      </div>
+    
+      <a class="prev" onclick="plusSlides(-1)">&#10094;</a>
+      <a class="next" onclick="plusSlides(1)">&#10095;</a>
+    </div>
+
+    <!-- ------------ featured categories ---------------- -->
+    <div class="categories"></div>
+
+    <!-- ------------ latest product ---------------- -->
+    <div class="small-container">
+      <h2 class="title">Latest Products</h2>
+      <div class="row">
+        <!-- --------card ------------ -->
+	{% for p in products %}
+          <div class="col-4"> 
+            <a href="/product-detail?productId={{p.0}}&category={{p.4}}&sellerId={{p.6}}"> 
+              <img src="{{p.5}}" height="237.5px" width="237.5" style="object-fit: contain"/> 
+              <h4>{{ p.1}}</h4>
+              {% set hargaAwal = p.3 * 1.3 | to_decimal%} 
+              <h4><b>{{p.3 | currencyFormat}}</b></h4>
+              <p><span class="diskon">30%</span> <strike>{{hargaAwal | currencyFormat}}</strike></p> 
+              {% if p.9 != 0 and p.10 != 0 %}
+	      <p><span class="fa fa-star checked"></span> {{p.9}} | {{p.10}} sold</p>
+	      {% elif p.9 ==0 and p.10 != 0 %}
+	      <p> {{p.10}} sold</p>
+	      {% endif %}
+	    </a>
+              <!-- <span class="fa fa-star checked"></span>
+              <span class="fa fa-star checked"></span>
+              <span class="fa fa-star checked"></span>
+              <span class="fa fa-star checked"></span>
+              <span class="fa fa-star checked"></span>
+            </a> -->
+          </div>
+	{% endfor %}
+      </div>
+    </div>
+
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js" integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" crossorigin="anonymous"></script>
+  <script>
+    $(document).ready(function(){
+      $(".title-diklikin").hide(0).delay(500).fadeIn(2000)
+      /* Every time the window is scrolled ... */
+      $(window).scroll( function(){
+      
+      /* Check the location of each desired element */
+          $('.hide-me').each( function(i){
+              
+              var bottom_of_object = $(this).offset().top + $(this).outerHeight();
+              var bottom_of_window = $(window).scrollTop() + $(window).height();
+              
+              /* If the object is completely visible in the window, fade it it */
+              if( bottom_of_window > bottom_of_object ){
+                  
+                  $(this).animate({'opacity':'1'},250);
+                      
+              }
+              
+          }); 
+
+      });
+    });
+  </script>
+
+<script>
+  window.fwSettings={
+  'widget_id':73000003249
+  };
+  !function(){if("function"!=typeof window.FreshworksWidget){var n=function(){n.q.push(arguments)};n.q=[],window.FreshworksWidget=n}}() 
+</script>
+<script type='text/javascript' src='https://widget.freshworks.com/widgets/73000003249.js' async defer></script>
+<script type="text/javascript">
+  "{{FRESHDESK_KEY}}"
+</script>
+
+<script>
+  let slideIndex = 1;
+  showSlides(slideIndex);
+  
+  // Next/previous controls
+  function plusSlides(n) {
+    showSlides(slideIndex += n);
+  }
+  
+  // Thumbnail image controls
+  function currentSlide(n) {
+    showSlides(slideIndex = n);
+  }
+  
+  function showSlides(n) {
+    let i;
+    let slides = document.getElementsByClassName("mySlides");
+    if (n > slides.length) {slideIndex = 1}
+    if (n < 1) {slideIndex = slides.length}
+    for (i = 0; i < slides.length; i++) {
+      slides[i].style.display = "none";
+    }
+    slides[slideIndex-1].style.display = "block";
+  
+}
+	
+var myIndex = 0;
+carousel();
+
+function carousel() {
+  var i;
+  var x = document.getElementsByClassName("mySlides");
+  for (i = 0; i < x.length; i++) {
+    x[i].style.display = "none";  
+  }
+  myIndex++;
+  if (myIndex > x.length) {myIndex = 1}    
+  x[myIndex-1].style.display = "block";  
+  setTimeout(carousel, 4500);    
+}
+</script>
+    
+{% endblock %}
+
